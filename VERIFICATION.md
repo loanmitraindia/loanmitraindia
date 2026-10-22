@@ -1,4 +1,76 @@
-# Verification — 22 October 2026
+# Verification — 23 October 2026
+
+## Calculator-led hero (current revision)
+
+- Added the prominent EMI calculator beside compact hero copy, with ivory controls, a navy result panel and a principal/interest chart. Moved the existing form into the next section beside the diagrams and bank marquee. Mobile source order is introduction → calculator → form → diagrams → banks.
+- Fixed illustrative rate: 9.9% p.a.; updated hero, FAQ and metadata consistently. Amount range ₹50,000–₹40,00,000 and tenure 12–60 months. The ₹3,00,000 / 36-month example yields ₹9,666 EMI, ₹47,979 interest and ₹3,47,979 total repayment. Calculations retain precision before display rounding.
+- Added validated editable fields and native sliders, placeholders for invalid estimates, inline errors, a 450ms-debounced result announcement, accessible text equivalents for the chart, fee/range qualifications and server-rendered default values with a no-JavaScript explanation.
+- Explicit handoff copies only the selected amount, preserves other form fields and focuses/scrolls to the loan-amount field so it remains visible on a tall mobile form. It respects reduced motion, supports repeated same-amount handoffs, locks during submission and links to existing confirmation after receipt. No calculator values other than loan amount enter the API.
+- Final `npm test`: **37 passed**. Coverage includes formula accuracy, boundaries, parsing, invalid inputs, slider/field updates, default SSR, repeated handoffs, retained field values, submission locking and confirmation preservation, plus all existing delivery/toast/motion tests. Services and navigation were mocked; no leads sent.
+- Final production build, TypeScript and `git diff --check` passed. CSS parses and the Google Fonts URL remains intact. Built HTML has one calculator, one enquiry form, the intended content order, no broken internal anchors and no remaining 9.99% copy.
+- Browser preview initially timed out; subsequent access to its error page was blocked by Browser Use URL policy. No bypass was attempted. Screenshots, keyboard appearance and overflow checks at 360, 390, 768 and 1440px, plus real-phone testing, remain **unverified**. Both temporary preview servers were stopped.
+- No new dependencies, environment variables, lead-schema fields or backend interfaces. Existing Gmail, Sheets, WhatsApp and toast behaviour is preserved. Earlier entries describe previous revisions.
+
+## Reverse bank-logo marquee (previous revision)
+
+- Added a continuous 40-second left-to-right desktop bank-logo loop, opposite to the feature strip, with soft edge fades. Heading and non-partnership caption remain stationary. There are no pause controls or hover/focus pause triggers.
+- Shared the existing desktop/reduced-motion media hook. Mobile, reduced-motion and server-rendered views retain the original six-logo grid. The duplicate logo group is hidden from assistive technology.
+- Final suite: **31 tests passed**. TypeScript, production build and CSS parsing passed. Fixed a pre-existing test timing race by waiting for the WhatsApp navigation-error toast effect before asserting; application submission behaviour was unchanged.
+- Browser visual checks for the logo loop seam and responsive overflow remain unverified. No backend, environment or dependency changes.
+
+## Continuous feature marquee (previous revision)
+
+- Removed the Pause/Play button, its reserved layout space and all hover, focus, viewport and tab-visibility pause logic. Desktop retains the continuous 40-second loop, edge fades and screen-reader-hidden duplicate list.
+- Mobile, reduced-motion and no-JavaScript views remain static; viewport and reduced-motion changes are still respected during the visit.
+- Updated marquee regression tests: **30 tests passed** across the full suite. TypeScript and production build passed after source edits. Browser seam and mobile visual checks were not performed.
+- No form, backend or environment changes. Earlier entries below record superseded behaviour.
+
+## Subtle motion update (previous revision)
+
+- Added a 40-second desktop feature marquee with edge fades, saffron separators and a 44px Pause/Play control. Movement starts only after client enhancement; server-rendered, mobile and reduced-motion versions remain static. The repeated feature group is hidden from assistive technology.
+- Automatic pause conditions combine hover, strip focus, enquiry-form focus, offscreen state and a hidden tab. Manual pause remains independent and persists through automatic condition changes. Clicking Play while focus remains inside the strip resumes movement only after that automatic pause condition clears.
+- Three small SVG accent groups enter once with 3–4px movement and 120ms stagger, finishing within 960ms. Financial/use-case cards have separate entrance and hover wrappers; precise-pointer hover lifts them 2px. CTA arrows move 3px without moving labels. Bank logos, rates, eligibility and fields remain stationary.
+- Reduced-motion changes during a visit stop movement. Existing 400ms one-time scroll reveals remain, with visible content when JavaScript or observer APIs are unavailable. No animation library was added.
+- Final `npm test`: **30 passed**, including manual-pause persistence, automatic pause/resume conditions, viewport/reduced-motion changes, duplicate-text accessibility, diagram playback and existing form/delivery/toast behaviour. External services and navigation are mocked; no real leads were sent.
+- Production build and TypeScript checks passed after final source edits and safe PostCSS formatting. `git diff --check` passed. The Google Fonts import remains a single quoted line.
+- Built HTML inspection confirmed four original features, static initial motion state, six separate hover wrappers, three diagram accent groups and stationary bank tiles.
+- Browser checks for the marquee seam, keyboard appearance, responsive overflow and layout at 360, 390, 768 and 1440px remain **unverified**, as does a real-phone HTTPS check. Existing browser URL-policy restrictions were not bypassed. No development server or public preview was started for this update.
+- Form validation, toasts, submission handling, WhatsApp navigation, backend interfaces, dependencies and environment values were preserved. Entries below describe earlier revisions.
+
+## Professional diagram, placement and feedback refinement
+
+- Replaced the character and lifestyle artwork with six original schematic SVGs: salary document, enquiry, phone/message, home floor plan, learning screen and occasion/calendar. Rendered and visually inspected an artwork contact sheet.
+- Desktop retains the form's existing width beside a compact hero, three diagram cards and a three-column/two-row salary-bank grid. Mobile source order is hero/eligibility → form → diagrams → bank examples. Removed the separate large bank section and the looping marquee/Pause control.
+- Static features and below-fold section headings/cards reveal once with a 400ms opacity/12px transition and up to 160ms stagger. Already-visible content, reduced motion and missing browser APIs stay static. Server-rendered content is never hidden pending JavaScript.
+- Added Sonner 2.0.8 with one shared, dismissible notification region. Generic failure and thrown-navigation messages reuse a per-form toast ID; retries clear stale feedback. Inline field errors and persistent delivery details remain. Full/partial success still navigates to WhatsApp immediately, without a success-toast delay.
+- Final `npm test`: **26 passed**. Coverage includes existing delivery and validation, error-toast reuse and dismissal, no applicant information in toast messages, unavailable service/timeouts/network failures, persistent field values, WhatsApp fallback, static feature rendering, one-time observer behaviour, bounded stagger, above-fold exclusion and reduced-motion/browser-API fallbacks. Services/navigation/toast calls are mocked; no real leads were sent.
+- `npm run typecheck`, `git diff --check` and the production build passed after all source edits, including CSS formatting. CSS was edited/stringified through PostCSS, preserving the single-line quoted Google Fonts URL.
+- Built HTML inspection: expected mobile source order, six local lazy-loaded logos, four feature items, zero feature controls, one notification region, and no broken section anchors.
+- Development check: HTTP 200 from `http://127.0.0.1:3000`, diagram-grid markup present and no CSS parsing error. Sandbox networking prevented reaching the initial temporary server; the check passed with the server outside the sandbox. Both temporary servers were stopped after verification.
+- Browser keyboard/overflow/toast placement checks at 360, 390, 768 and 1440px and a real-phone test remain **unverified**. Existing browser URL-policy restrictions were not bypassed. The artwork and DOM checks do not replace browser screenshots.
+- No API, backend delivery, validation schema or environment changes. Earlier verification entries below describe previous revisions, including the now-removed marquee.
+
+## CSS import repair
+
+- The final formatting pass after the visual-update build split semicolons inside the quoted Google Fonts URL into new lines. This introduced a CSS parsing error after that build; the earlier build result did not validate that final formatting change.
+- Restored the font import to a single line, preserving the remaining stylesheet. The unsafe formatter was not rerun.
+- Reran `npm run build` and `npm run typecheck` after the stylesheet repair: both passed. The build ran outside the sandbox because generated-file writes require it in this environment.
+- Requested the running development page at `http://localhost:3000` outside the sandbox: HTTP 200, expected landing-page content present, and no CSS parsing error in the response. This confirms server-side development compilation; a browser-tab reload was not performed.
+
+## Landing-page visual update
+
+- Implemented the desktop hero/form layout, original SVG artwork, salary-bank examples, three illustrated use-case cards, process steps and expanded FAQ layout. Mobile CSS places eligibility and the form before the decorative illustration.
+- `npm test`: **24 tests passed**. Includes the previous 20 delivery/form checks plus static pre-hydration rendering, persistent marquee pause/replay, switching to mobile/reduced motion, and reveal fallbacks. No real lead was submitted or external message sent.
+- `npm run typecheck`: passed. Production build passed with Next.js 16.4.2 outside the sandbox; the sandboxed build was blocked by an EPERM while creating generated route directories.
+- Prerendered HTML: one H1, all internal section anchors resolve, six bank images resolve to local files, four features are present without JavaScript, and the form is not hidden by animation.
+- All six logo files decode; SVG checks found no scripts, event handlers, foreign objects or external resource references. Combined bank assets are approximately 46 KB. Source URLs and reuse context are in `public/banks/SOURCES.md`.
+- Artwork and logo contact sheets were visually inspected. Replaced the initial white/reverse Axis, ICICI and Bank of Baroda assets with official colour versions suitable for the light background. The custom illustrations were rendered and inspected independently of the webpage.
+- Measured contrast: navy/ivory 13.56:1; body text/peach FAQ 5.44:1; saffron/ivory 4.70:1; green/sage form header 6.14:1; body text/peach card 5.31:1.
+- Viewport screenshots, browser keyboard/overflow checks at 360, 390, 768 and 1440px, and a physical-phone HTTPS test remain **unverified**. Browser access in this workspace was previously blocked by URL security policy. Asset inspection and DOM tests do not substitute for those checks. No new public preview was deployed.
+- Manual acceptance: on an HTTPS preview, check those four widths, keyboard focus and consent links, Pause/Play, OS reduced-motion preference, FAQ expansion, field-error placement, and the WhatsApp manual fallback/Send step. Use test details and expect real email/Sheet side effects if live delivery settings are enabled.
+- Backend, schema, secrets and environment values were not changed by the visual update.
+
+## Earlier integration verification
 
 - `npm test`: 20 tests passed. SMTP, HTTP, Google Apps Script services and WhatsApp navigation are mocked; no external messages sent.
 - `npm run typecheck`: passed.
