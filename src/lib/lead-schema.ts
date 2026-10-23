@@ -1,6 +1,14 @@
 import { z } from "zod";
 
+export const PRODUCT_LABELS = {
+  personal_loan: "Personal loan",
+  hybrid_flexi: "Hybrid flexi loan",
+  overdraft: "Overdraft facility",
+  not_sure: "Not sure—please guide me",
+} as const;
+
 export const leadSchema = z.object({
+  productInterest: z.enum(["personal_loan", "hybrid_flexi", "overdraft", "not_sure"], { error: "Choose the product you are interested in." }).default("personal_loan"),
   fullName: z.string().trim().min(2, "Enter your full name.").max(100),
   phone: z.string().trim().regex(/^[6-9]\d{9}$/, "Enter a valid 10-digit Indian mobile number."),
   email: z.string().trim().email("Enter a valid email address.").max(254),
@@ -16,4 +24,4 @@ export const leadSchema = z.object({
 
 export type LeadInput = z.infer<typeof leadSchema>;
 export type Lead = LeadInput & { id: string; submittedAt: string; consentVersion: string };
-export const CONSENT_VERSION = "2026-10-22-v2";
+export const CONSENT_VERSION = "2026-10-23-v3";

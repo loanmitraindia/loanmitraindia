@@ -3,8 +3,8 @@ import "./globals.css";
 import Notifications from "@/components/notifications";
 
 export const metadata: Metadata = {
-  title: "LoanMitra India | EMI calculator & personal loan enquiries",
-  description: "Estimate your personal loan EMI at an illustrative 9.9% p.a. and request a callback. Enquiries for salaried residents of India earning ₹18,000+ monthly; subject to lender eligibility.",
+  title: "LoanMitra India | Personal loans, hybrid flexi & overdraft enquiries",
+  description: "Explore personal loan, hybrid flexi loan and overdraft options for salaried applicants across India. Estimate personal loan EMIs with an adjustable rate calculator. Subject to lender eligibility.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

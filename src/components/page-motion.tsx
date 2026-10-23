@@ -30,7 +30,7 @@ export function Reveal({ children, className = "", delay = 0 }: { children: Reac
   return <div ref={ref} className={className} style={{ animationDelay: `${Math.min(160, Math.max(0, delay))}ms` }}>{children}</div>;
 }
 
-const features = ["Estimate your EMI", "Request a loan callback", "For salaried applicants", "Enquiries across India"];
+const features = ["Personal loan enquiries", "Hybrid flexi & overdraft options", "Estimate your personal loan EMI", "For salaried applicants across India"];
 
 export function DiagramSequence({ children }: { children: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);

@@ -1,0 +1,132 @@
+[
+  {
+    "bankMotion": "false",
+    "calculator": {
+      "height": 1168.1500244140625,
+      "width": 308.8000183105469,
+      "x": 18,
+      "y": 530.7999877929688
+    },
+    "eyebrow": "14px",
+    "featureMotion": "false",
+    "form": {
+      "height": 1459.4000244140625,
+      "width": 308.8000183105469,
+      "x": 18,
+      "y": 1722.9500732421875
+    },
+    "input": "17px",
+    "overflow": false,
+    "steps": {
+      "height": 444.8000183105469,
+      "width": 308.8000183105469,
+      "x": 18,
+      "y": 3206.35009765625
+    },
+    "width": 360
+  },
+  {
+    "bankMotion": "false",
+    "calculator": {
+      "height": 1138.25,
+      "width": 339.20001220703125,
+      "x": 18,
+      "y": 530.7999877929688
+    },
+    "eyebrow": "14px",
+    "featureMotion": "false",
+    "form": {
+      "height": 1421,
+      "width": 339.20001220703125,
+      "x": 18,
+      "y": 1693.050048828125
+    },
+    "input": "17px",
+    "overflow": false,
+    "steps": {
+      "height": 444.8000183105469,
+      "width": 339.20001220703125,
+      "x": 18,
+      "y": 3138.050048828125
+    },
+    "width": 390
+  },
+  {
+    "bankMotion": "false",
+    "calculator": {
+      "height": 958.75,
+      "width": 704.7999877929688,
+      "x": 24,
+      "y": 409.5
+    },
+    "eyebrow": "14px",
+    "featureMotion": "false",
+    "form": {
+      "height": 1059.2000732421875,
+      "width": 704.7999877929688,
+      "x": 24,
+      "y": 1392.25
+    },
+    "input": "17px",
+    "overflow": false,
+    "steps": {
+      "height": 332.3999938964844,
+      "width": 704.7999877929688,
+      "x": 24,
+      "y": 2475.449951171875
+    },
+    "width": 768
+  },
+  {
+    "bankMotion": "true",
+    "calculator": {
+      "height": 1068.5999755859375,
+      "width": 426.8000183105469,
+      "x": 32,
+      "y": 360.5
+    },
+    "eyebrow": "16px",
+    "featureMotion": "true",
+    "form": {
+      "height": 1102.5999755859375,
+      "width": 490,
+      "x": 486.8000183105469,
+      "y": 360.5
+    },
+    "input": "17px",
+    "overflow": false,
+    "steps": {
+      "height": 354.5,
+      "width": 426.8000183105469,
+      "x": 32,
+      "y": 1449.0999755859375
+    },
+    "width": 1024
+  },
+  {
+    "bankMotion": "true",
+    "calculator": {
+      "height": 968.5499877929688,
+      "width": 722,
+      "x": 92.4000015258789,
+      "y": 374.6000061035156
+    },
+    "eyebrow": "16px",
+    "featureMotion": "true",
+    "form": {
+      "height": 1119.4000244140625,
+      "width": 490,
+      "x": 842.4000244140625,
+      "y": 374.6000061035156
+    },
+    "input": "17px",
+    "overflow": false,
+    "steps": {
+      "height": 310.3000183105469,
+      "width": 722,
+      "x": 92.4000015258789,
+      "y": 1363.1500244140625
+    },
+    "width": 1440
+  }
+]

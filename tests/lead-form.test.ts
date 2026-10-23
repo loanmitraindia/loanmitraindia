@@ -21,10 +21,30 @@ function completeForm() {
   for (const [name, value] of Object.entries({ fullName: "Test Applicant", phone: "9876543210", email: "test@example.com", city: "Pune", pincode: "411001", employer: "Example Company", salary: "18,000", loanAmount: "3,00,000" })) {
     fireEvent.change(ui.container.querySelector(`[name="${name}"]`)!, { target: { value } });
   }
+  fireEvent.change(ui.getByLabelText(/Interested in/), { target: { value: "personal_loan" } });
   fireEvent.change(ui.getByLabelText(/Salary account bank/), { target: { value: "HDFC Bank" } });
   fireEvent.click(ui.getByRole("checkbox"));
   return ui;
 }
+
+test("product selection is required in the UI and retained after a failed request", async () => {
+  notifications();
+  const fetch = mock.method(globalThis, "fetch", async () => Response.json({ error: "Service unavailable" }, { status: 503 }));
+  const ui = render(createElement(LeadForm));
+  const product = ui.getByLabelText(/Interested in/) as HTMLSelectElement;
+  assert.equal(product.value, "");
+  fireEvent.submit(ui.container.querySelector("form")!);
+  assert.equal(fetch.mock.callCount(), 0);
+  assert.equal(document.activeElement, product);
+  assert.ok(ui.getByText("Choose the product you are interested in."));
+  cleanup();
+  const filled = completeForm();
+  fireEvent.change(filled.getByLabelText(/Interested in/), { target: { value: "hybrid_flexi" } });
+  fireEvent.submit(filled.container.querySelector("form")!);
+  await filled.findByText("Service unavailable");
+  assert.equal((filled.getByLabelText(/Interested in/) as HTMLSelectElement).value, "hybrid_flexi");
+  assert.equal((filled.getByLabelText(/Full name/) as HTMLInputElement).value, "Test Applicant");
+});
 
 test("full and partial receipt automatically open WhatsApp with a manual fallback", async () => {
   for (const status of ["delivered", "partially_delivered"]) {
@@ -84,7 +104,7 @@ test("retries dismiss stale feedback and reuse the same toast id without applica
   for (let i = 0; i < 2; i++) {
     fireEvent.submit(ui.container.querySelector("form")!);
     await waitFor(() => assert.equal(feedback.error.mock.callCount(), i + 1));
-    await waitFor(() => assert.equal(ui.getByRole("button", { name: "Request a callback" }).hasAttribute("disabled"), false));
+    await waitFor(() => assert.equal(ui.getByRole("button", { name: "Submit enquiry" }).hasAttribute("disabled"), false));
   }
   const calls = feedback.error.mock.calls;
   const id = calls[0].arguments[1]?.id;

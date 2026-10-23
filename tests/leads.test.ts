@@ -5,11 +5,25 @@ import type SMTPTransport from "nodemailer/lib/smtp-transport";
 import type Mail from "nodemailer/lib/mailer";
 import { POST } from "../src/app/api/leads/route";
 import { appendSheet, buildWhatsAppUrl, missingConfiguration, requiredEnv } from "../src/lib/delivery";
-import { CONSENT_VERSION } from "../src/lib/lead-schema";
+import { CONSENT_VERSION, leadSchema, PRODUCT_LABELS } from "../src/lib/lead-schema";
 
 const valid = { fullName: "Test Applicant", phone: "9876543210", email: "applicant@example.com", city: "Pune", pincode: "411001", employer: "Example Company", salary: 18000, loanAmount: 300000, salaryBank: "Example Bank", consent: true as const, website: "" };
-const lead = { ...valid, id: "d7334c43-1435-4e59-9f5b-74a0f47bde20", submittedAt: "2026-10-22T10:00:00.000Z", consentVersion: CONSENT_VERSION };
+const lead = { ...valid, productInterest: "personal_loan" as const, id: "d7334c43-1435-4e59-9f5b-74a0f47bde20", submittedAt: "2026-10-22T10:00:00.000Z", consentVersion: CONSENT_VERSION, leadSchema, PRODUCT_LABELS };
 const oldEnv = { ...process.env };
+
+test("product interest validates all choices and keeps legacy requests compatible", async () => {
+  assert.equal(leadSchema.parse(valid).productInterest, "personal_loan");
+  for (const productInterest of ["", "unknown", null, 1]) assert.equal(leadSchema.safeParse({ ...valid, productInterest }).success, false);
+  let index = 0;
+  for (const [productInterest, label] of Object.entries(PRODUCT_LABELS)) {
+    const response = await POST(request({ ...valid, phone: `987654320${index++}`, productInterest }));
+    assert.equal(response.status, 200);
+    const result = await response.json();
+    assert.ok(String(mail.at(-1)!.text).includes(`Interested in: ${label}`));
+    assert.equal(JSON.parse(String(calls.at(-1)!.init.body)).lead.productInterest, productInterest);
+    assert.ok(new URL(result.whatsappUrl).searchParams.get("text")!.includes(`Interested in: ${label}`));
+  }
+});
 let calls: Array<{ url: string; init: RequestInit }>;
 let mail: Mail.Options[];
 let smtpOptions: SMTPTransport.Options;

@@ -1,6 +1,7 @@
 import nodemailer from "nodemailer";
 import { z } from "zod";
 import type { Lead } from "./lead-schema";
+import { PRODUCT_LABELS } from "./lead-schema";
 
 export const requiredEnv = [
   "PRIVACY_CONTACT_EMAIL", "GMAIL_USER", "GMAIL_APP_PASSWORD", "LEAD_EMAIL_TO",
@@ -30,7 +31,8 @@ export function leadLines(lead: Lead): string[][] {
     ["Reference", lead.id], ["Submitted (UTC)", lead.submittedAt],
     ["Name", lead.fullName], ["Phone", `+91${lead.phone}`], ["Email", lead.email],
     ["City", lead.city], ["PIN code", lead.pincode], ["Employer", lead.employer],
-    ["Monthly salary", rupees(lead.salary)], ["Requested loan", rupees(lead.loanAmount)],
+    ["Interested in", PRODUCT_LABELS[lead.productInterest]],
+    ["Monthly salary", rupees(lead.salary)], ["Loan amount / credit limit required", rupees(lead.loanAmount)],
     ["Salary bank", lead.salaryBank], ["Contact consent", "Yes"], ["Consent version", lead.consentVersion],
   ].map(([label, value]) => [label, singleLine(value)]);
 }
@@ -38,7 +40,7 @@ export function leadLines(lead: Lead): string[][] {
 export function buildWhatsAppUrl(lead: Lead) {
   const recipient = process.env.WHATSAPP_RECIPIENT?.trim() || "";
   if (!/^[1-9]\d{7,14}$/.test(recipient)) throw new Error("Invalid WhatsApp recipient");
-  const message = "Hello LoanMitra India, I’d like to enquire about a personal loan.\n\n" +
+  const message = "Hello LoanMitra India, I’d like to discuss my financing options.\n\n" +
     leadLines(lead).map(([label, value]) => `${label}: ${value}`).join("\n");
   return `https://wa.me/${recipient}?text=${encodeURIComponent(message)}`;
 }

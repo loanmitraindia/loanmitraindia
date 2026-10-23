@@ -3,7 +3,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { toast } from "sonner";
 import { ArrowRight, Check, CheckCircle2, ChevronDown, LoaderCircle, LockKeyhole, RotateCcw } from "lucide-react";
-import { leadSchema } from "@/lib/lead-schema";
+import { leadSchema, PRODUCT_LABELS } from "@/lib/lead-schema";
 import { safeWhatsAppUrl, whatsappNavigation } from "@/lib/whatsapp-navigation";
 import type { EnquiryStatus } from "@/components/emi-calculator";
 
@@ -15,7 +15,7 @@ const fields = [
   { name: "pincode", label: "PIN code", placeholder: "6-digit PIN code", autoComplete: "postal-code", maxLength: 6, inputMode: "numeric" as const },
   { name: "employer", label: "Company / employer", placeholder: "Where you work", autoComplete: "organization", wide: true },
   { name: "salary", label: "Monthly take-home salary", placeholder: "Minimum 18,000", prefix: "₹", inputMode: "numeric" as const },
-  { name: "loanAmount", label: "Loan amount required", placeholder: "e.g. 3,00,000", prefix: "₹", inputMode: "numeric" as const },
+  { name: "loanAmount", label: "Loan amount / credit limit required", placeholder: "e.g. 3,00,000", prefix: "₹", inputMode: "numeric" as const },
 ];
 
 export type LoanPrefill = { amount: number; id: number };
@@ -112,12 +112,22 @@ export default function LeadForm({ prefill, onStatusChange }: { prefill?: LoanPr
   </section>;
 
   return <section className="application-card" id="apply" aria-labelledby="form-title">
-    <div className="form-topline"><span>PERSONAL LOAN ENQUIRY</span></div>
-    <div className="form-heading"><h2 id="form-title">Request a loan callback</h2><p>Share your contact and employment details so our team can respond to your enquiry and discuss available options.</p></div>
+    <div className="form-topline"><span>YOUR LOAN ENQUIRY</span></div>
+    <div className="form-heading"><h2 id="form-title">Tell us what you need</h2><p>This starts an enquiry with LoanMitra. Approval and final terms depend on the lender.</p></div>
     <form onSubmit={submit} ref={formRef} noValidate aria-describedby={error ? "delivery-error" : undefined}>
       <fieldset disabled={busy}>
         <legend className="sr-only">Your contact and employment details</legend>
         <div className="form-grid">
+          <div className="form-field wide">
+            <label htmlFor="productInterest">Interested in <span aria-hidden="true">*</span></label>
+            <div className={`input-wrap select-wrap ${errors.productInterest ? "invalid" : ""}`}>
+              <select id="productInterest" name="productInterest" defaultValue="" required aria-invalid={!!errors.productInterest} aria-describedby={errors.productInterest ? "productInterest-error" : undefined}>
+                <option value="" disabled>Select a product</option>
+                {Object.entries(PRODUCT_LABELS).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+              </select><ChevronDown size={16} aria-hidden="true" />
+            </div>
+            {errors.productInterest && <span className="field-error" id="productInterest-error">{errors.productInterest}</span>}
+          </div>
           {fields.map((field) => <div className={`form-field ${field.wide ? "wide" : ""}`} key={field.name}>
             <label htmlFor={field.name}>{field.label} <span aria-hidden="true">*</span></label>
             <div className={`input-wrap ${errors[field.name] ? "invalid" : ""}`}>
@@ -143,7 +153,7 @@ export default function LeadForm({ prefill, onStatusChange }: { prefill?: LoanPr
         {errors.consent && <p className="field-error" id="consent-error">{errors.consent}</p>}
         {error && <div className="form-error" id="delivery-error">{error}</div>}
         {error && whatsappUrl && <div><a className="secondary-button" href={whatsappUrl} rel="noreferrer">Open WhatsApp <ArrowRight size={16} /></a><p className="form-note">Review your details and tap Send in WhatsApp.</p></div>}
-        <button className="submit-button" type="submit" disabled={busy}>{busy ? <><LoaderCircle className="spin" size={20} /> Sending your enquiry…</> : <>Request a callback <ArrowRight size={19} /></>}</button>
+        <button className="submit-button" type="submit" disabled={busy}>{busy ? <><LoaderCircle className="spin" size={20} /> Sending your enquiry…</> : <>Submit enquiry <ArrowRight size={19} /></>}</button>
         <p className="form-note"><LockKeyhole size={12} /> No documents or bank account numbers needed here.</p>
       </fieldset>
     </form>

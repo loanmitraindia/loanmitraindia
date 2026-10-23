@@ -2,17 +2,18 @@
 
 import { useEffect, useState } from "react";
 import { ArrowRight } from "lucide-react";
-import { calculateEmi, EMI_RATE, formatRupees, formatTenure, parseLoanAmount, parseTenure } from "@/lib/emi";
+import { calculateEmi, EMI_RATE, formatRupees, formatTenure, parseLoanAmount, parseTenure, parseInterestRate } from "@/lib/emi";
 
 export type EnquiryStatus = "idle" | "submitting" | "received";
 
 export default function EmiCalculator({ onEnquire, status }: { onEnquire: (amount: number) => void; status: EnquiryStatus }) {
   const [amountText, setAmountText] = useState("3,00,000");
   const [monthsText, setMonthsText] = useState("36");
+  const [rateText, setRateText] = useState(String(EMI_RATE));
   const [announcement, setAnnouncement] = useState("");
-  const amount = parseLoanAmount(amountText), months = parseTenure(monthsText);
-  const result = amount !== null && months !== null ? calculateEmi(amount, months) : null;
-  const summary = result ? `Estimated monthly EMI ${formatRupees(result.emi)}. Total interest ${formatRupees(result.interest)}. Total repayment ${formatRupees(result.total)}.` : "Enter a valid loan amount and tenure to see your estimate.";
+  const amount = parseLoanAmount(amountText), months = parseTenure(monthsText), rate = parseInterestRate(rateText);
+  const result = amount !== null && months !== null && rate !== null ? calculateEmi(amount, months, rate) : null;
+  const summary = result ? `Estimated monthly EMI ${formatRupees(result.emi)} at ${rate}% per year. Total interest ${formatRupees(result.interest)}. Total repayment ${formatRupees(result.total)}.` : "Enter a valid loan amount, tenure and interest rate to see your estimate.";
   useEffect(() => {
     const timer = window.setTimeout(() => setAnnouncement(summary), 450);
     return () => window.clearTimeout(timer);
@@ -21,8 +22,8 @@ export default function EmiCalculator({ onEnquire, status }: { onEnquire: (amoun
 
   return <section className="emi-card" id="emi-calculator" aria-labelledby="emi-title">
     <div className="emi-inputs">
-      <div className="emi-heading"><div><span className="eyebrow">ESTIMATE YOUR REPAYMENT</span><h2 id="emi-title">Personal loan EMI calculator</h2></div><span className="emi-rate">{EMI_RATE}% p.a.<small>Illustrative rate</small></span></div>
-      <p className="emi-intro">Adjust the amount and tenure to estimate your monthly EMI at 9.9% p.a. No contact details needed.</p>
+      <div className="emi-heading"><div><span className="eyebrow">ESTIMATE YOUR REPAYMENT</span><h2 id="emi-title">Personal loan EMI calculator</h2></div><span className="emi-rate">{rate !== null ? `${rate}% p.a.` : "—"}<small>Illustrative rate</small></span></div>
+      <p className="emi-intro">Adjust the amount, interest rate and tenure to estimate your personal loan EMI. No contact details needed.</p>
       <div className="emi-control">
         <div className="emi-field-row"><label htmlFor="emi-amount">Loan amount</label><div className="emi-number"><span aria-hidden="true">₹</span><input id="emi-amount" inputMode="numeric" maxLength={20} value={amountText} onChange={event => setAmountText(event.target.value)} onBlur={() => { if (amount !== null) setAmountText(amount.toLocaleString("en-IN")); }} aria-invalid={amount === null} aria-describedby={amount === null ? "emi-amount-error" : "emi-amount-bounds"} /></div></div>
         <input className="emi-slider" type="range" aria-label="Loan amount slider" min={50000} max={4000000} step={10000} value={amount ?? 50000} onChange={event => setAmountText(Number(event.target.value).toLocaleString("en-IN"))} aria-valuetext={formatRupees(amount ?? 50000)} />
@@ -35,6 +36,12 @@ export default function EmiCalculator({ onEnquire, status }: { onEnquire: (amoun
         <div className="emi-bounds"><span>1 year</span><span id="emi-tenure-description">{months !== null ? formatTenure(months) : "—"}</span><span>5 years</span></div>
         {months === null && <p className="field-error" id="emi-months-error">Enter a whole number of months from 12 to 60.</p>}
       </div>
+      <div className="emi-control">
+        <div className="emi-field-row"><label htmlFor="emi-rate">Annual interest rate (%)</label><div className="emi-number emi-tenure-input"><input id="emi-rate" inputMode="decimal" maxLength={6} value={rateText} onChange={event => setRateText(event.target.value)} aria-invalid={rate === null} aria-describedby={rate === null ? "emi-rate-error" : "emi-rate-bounds"} /><span aria-hidden="true">%</span></div></div>
+        <input className="emi-slider" type="range" aria-label="Annual interest rate slider" min={1} max={36} step={0.1} value={rate ?? 1} onChange={event => setRateText(event.target.value)} aria-valuetext={rate !== null ? `${rate}% per year` : "Enter a valid interest rate"} />
+        <div className="emi-bounds" id="emi-rate-bounds"><span>1% p.a.</span><span>36% p.a.</span></div>
+        {rate === null && <p className="field-error" id="emi-rate-error">Enter a rate from 1% to 36%, with up to two decimal places.</p>}
+      </div>
     </div>
     <div className="emi-results">
       <div className="emi-result-top"><div><p className="emi-result-label">Estimated monthly EMI</p><p className="emi-value" data-testid="emi-value">{result ? formatRupees(result.emi) : "—"}<span>/ month</span></p></div>
@@ -44,7 +51,7 @@ export default function EmiCalculator({ onEnquire, status }: { onEnquire: (amoun
       {status === "received" ? <a className="emi-cta" href="#apply">View your enquiry confirmation <ArrowRight size={18} aria-hidden="true" /></a> : <button className="emi-cta" type="button" disabled={!result || status === "submitting"} onClick={() => { if (amount !== null && result) onEnquire(amount); }}>{status === "submitting" ? "Enquiry in progress…" : "Enquire for this amount"}<ArrowRight size={18} aria-hidden="true" /></button>}
       {status !== "received" && <p className="emi-handoff-note">Copies this amount into the enquiry form. Nothing is submitted yet.</p>}
     </div>
-    <p className="emi-disclaimer">Illustrative estimate at 9.9% p.a. on a reducing balance. Excludes processing fees, taxes and other charges. Actual rate, EMI, tenure and approval depend on the lender and your profile. Calculator ranges are illustrative, not eligibility limits. Figures are rounded to the nearest rupee.</p>
+    <p className="emi-disclaimer">{rate !== null ? `Illustrative estimate at ${rate}% p.a. on a reducing balance.` : "Enter a valid annual rate to see an estimate."} For standard personal loans only; this does not estimate hybrid flexi or overdraft repayments. Excludes processing fees, taxes and other charges. Actual rate, EMI, tenure and approval depend on the lender and your profile. Calculator ranges are illustrative, not eligibility limits. Figures are rounded to the nearest rupee.</p>
     <noscript><p className="emi-disclaimer">This is an example for ₹3,00,000 over 36 months. Enable JavaScript to change the estimate.</p></noscript>
     <span className="sr-only" role="status" aria-live="polite" aria-atomic="true">{announcement}</span>
   </section>;

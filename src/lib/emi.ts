@@ -1,5 +1,11 @@
 export const EMI_RATE = 9.9;
-export const EMI_LIMITS = { minAmount: 50000, maxAmount: 4000000, minMonths: 12, maxMonths: 60 };
+export const EMI_LIMITS = { minAmount: 50000, maxAmount: 4000000, minMonths: 12, maxMonths: 60, minRate: 1, maxRate: 36 };
+
+export function parseInterestRate(value: string): number | null {
+  if (!/^\d+(?:\.\d{1,2})?$/.test(value.trim())) return null;
+  const rate = Number(value);
+  return rate >= EMI_LIMITS.minRate && rate <= EMI_LIMITS.maxRate ? rate : null;
+}
 
 export function parseLoanAmount(value: string): number | null {
   const text = value.trim();
@@ -14,9 +20,10 @@ export function parseTenure(value: string): number | null {
   return months >= EMI_LIMITS.minMonths && months <= EMI_LIMITS.maxMonths ? months : null;
 }
 
-export function calculateEmi(principal: number, months: number) {
+export function calculateEmi(principal: number, months: number, annualRate = EMI_RATE) {
   if (!Number.isInteger(principal) || principal < EMI_LIMITS.minAmount || principal > EMI_LIMITS.maxAmount || !Number.isInteger(months) || months < EMI_LIMITS.minMonths || months > EMI_LIMITS.maxMonths) throw new RangeError("Invalid calculator amount or tenure");
-  const monthlyRate = EMI_RATE / 1200;
+  if (!Number.isFinite(annualRate) || annualRate < EMI_LIMITS.minRate || annualRate > EMI_LIMITS.maxRate) throw new RangeError("Invalid calculator interest rate");
+  const monthlyRate = annualRate / 1200;
   const emi = principal * monthlyRate / (1 - Math.pow(1 + monthlyRate, -months));
   const total = emi * months;
   return { emi, principal, interest: total - principal, total };
