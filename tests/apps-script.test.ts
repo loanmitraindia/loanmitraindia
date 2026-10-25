@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
 import { runInNewContext } from "node:vm";
+import { PREFERRED_LENDERS } from "../src/lib/lenders";
 
 const source = readFileSync("apps-script/Code.gs", "utf8");
 const lead = { id: "d7334c43-1435-4e59-9f5b-74a0f47bde20", submittedAt: "2026-10-22T10:00:00.000Z", fullName: "Test Applicant", phone: "9876543210", email: "test@example.com", city: "Pune", pincode: "411001", employer: "Example Company", salary: 18000, loanAmount: 300000, salaryBank: "Example Bank", consent: true, consentVersion: "2026-10-22-v2" };
@@ -65,7 +66,7 @@ function harness() {
 }
 test("receiver creates headers, writes one row and deduplicates references", () => {
   const h = harness();
-  assert.equal(h.send().ok, true); assert.equal(h.rows.length, 2); assert.equal(h.rows[0].length, 15);
+  assert.equal(h.send().ok, true); assert.equal(h.rows.length, 2); assert.equal(h.rows[0].length, 16);
   assert.equal(h.rows[0][2], "Submitted (IST)");
   assert.equal(h.rows[1][1], lead.submittedAt);
   assert.equal(h.rows[1][2], "22 Oct 2026, 03:30:00 PM IST");
@@ -114,9 +115,45 @@ test("product choices are recorded, legacy payloads default, unknown choices fai
 
 function oldSheet(product: boolean) {
   const h = harness(); h.send({ ...lead, productInterest: "overdraft" });
-  h.rows.forEach(row => { row.splice(2, 1); if (!product) row.pop(); });
+  h.rows.forEach(row => { row.pop(); row.splice(2, 1); if (!product) row.pop(); });
   return h;
 }
+
+test("all lender preferences stay separate from salary bank; omitted values remain compatible", () => {
+  const scriptChoices = runInNewContext(source + "\nPREFERRED_LENDERS;");
+  assert.deepEqual(Array.from(scriptChoices), [...PREFERRED_LENDERS]);
+  for (const preferredLender of PREFERRED_LENDERS) {
+    const h = harness();
+    assert.equal(h.send({ ...lead, preferredLender }).ok, true);
+    assert.equal(h.rows[1][15], preferredLender || "No preference—please guide me");
+    assert.equal(h.rows[1][11], lead.salaryBank);
+  }
+  const h = harness(); h.send();
+  assert.equal(h.rows[1][15], "No preference—please guide me");
+  for (const preferredLender of ["Unknown", "=SUM(1,2)", null, 1]) assert.equal(h.send({ ...lead, preferredLender }).error, "invalid_lead");
+});
+
+test("15-column migration preserves history and notes, resumes after interruption, and records new preferences", () => {
+  const h = harness(); h.send({ ...lead, productInterest: "overdraft" });
+  h.rows.forEach(row => row.pop());
+  assert.equal(h.send({ ...lead, id: "d7334c43-1435-4e59-9f5b-74a0f47bde21", preferredLender: "Piramal Finance" }).ok, true);
+  assert.equal(h.rows[2].length, 15);
+  const original = h.rows.map(row => [...row]);
+  h.rows[0][15] = "Notes"; h.rows[1][15] = "Keep this";
+  h.onInsert(() => { assert.equal(h.send().error, "busy"); throw new Error("interrupted"); });
+  assert.throws(() => h.migrate(), /interrupted/);
+  h.migrate();
+  assert.deepEqual(h.rows.map(row => row.slice(0, 15)), original);
+  assert.equal(h.rows[0][15], "Preferred bank / NBFC");
+  assert.equal(h.rows[1][15], "");
+  assert.equal(h.rows[1][16], "Keep this");
+  const before = JSON.stringify(h.rows);
+  assert.equal(h.migrate().status, "already_migrated");
+  assert.equal(JSON.stringify(h.rows), before);
+  assert.equal(h.send().duplicate, true);
+  assert.equal(h.send({ ...lead, id: "d7334c43-1435-4e59-9f5b-74a0f47bde22", preferredLender: "L&T Finance" }).ok, true);
+  assert.equal(h.rows[3][15], "L&T Finance");
+});
 
 test("IST conversion handles ordinary dates, midnight, month and year rollover", () => {
   const h = harness();
@@ -179,8 +216,8 @@ test("migration shifts trailing operator data and formulas without overwriting t
   h.rows[0][13] = "Notes"; h.rows[1][13] = "Keep this";
   h.rows[1][14] = ""; h.formulas[1] = []; h.formulas[1][14] = '=IF(TRUE,"","")';
   h.migrate();
-  assert.equal(h.rows[0][15], "Notes"); assert.equal(h.rows[1][15], "Keep this");
-  assert.equal(h.formulas[1][16], '=IF(TRUE,"","")');
+  assert.equal(h.rows[0][16], "Notes"); assert.equal(h.rows[1][16], "Keep this");
+  assert.equal(h.formulas[1][17], '=IF(TRUE,"","")');
   const before = JSON.stringify({ rows: h.rows, formulas: h.formulas });
   h.migrate(); assert.equal(JSON.stringify({ rows: h.rows, formulas: h.formulas }), before);
 });
@@ -213,7 +250,7 @@ test("migration rejects wrong/formula headers, shares the writer lock and recove
   assert.equal(h.rows[0][2], "");
   assert.equal(h.send().error, "header_mismatch");
   assert.equal(h.migrate().filledRows, 1);
-  assert.equal(h.rows[0].length, 15, "retry must not insert a second IST column");
+  assert.equal(h.rows[0].length, 16, "retry must not insert a second IST column");
   const empty = harness(); empty.narrow(10); empty.onWrite(() => assert.equal(empty.send().error, "busy"));
   assert.equal(empty.migrate().status, "migrated"); assert.equal(empty.rows.length, 1);
   assert.equal(empty.send().ok, true);

@@ -4,6 +4,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import { toast } from "sonner";
 import { ArrowRight, Check, CheckCircle2, ChevronDown, LoaderCircle, LockKeyhole, RotateCcw } from "lucide-react";
 import { leadSchema, PRODUCT_LABELS } from "@/lib/lead-schema";
+import { SALARY_BANKS, PREFERRED_BANKS, PREFERRED_NBFCS, NO_LENDER_PREFERENCE } from "@/lib/lenders";
 import { safeWhatsAppUrl, whatsappNavigation } from "@/lib/whatsapp-navigation";
 import type { EnquiryStatus } from "@/components/emi-calculator";
 
@@ -141,11 +142,23 @@ export default function LeadForm({ prefill, onStatusChange }: { prefill?: LoanPr
             <div className={`input-wrap select-wrap ${errors.salaryBank ? "invalid" : ""}`}>
               <select name="salaryBank" id="salaryBank" value={bank} onChange={(e) => setBank(e.target.value)} required aria-invalid={!!errors.salaryBank} aria-describedby={errors.salaryBank ? "salaryBank-error" : undefined}>
                 <option value="" disabled>Select your bank</option>
-                {["State Bank of India", "HDFC Bank", "ICICI Bank", "Axis Bank", "Kotak Mahindra Bank", "Punjab National Bank", "Bank of Baroda", "Canara Bank", "Union Bank of India", "IDFC FIRST Bank", "IndusInd Bank", "Other"].map((name) => <option key={name}>{name}</option>)}
+                {[...SALARY_BANKS, "Other"].map((name) => <option key={name}>{name}</option>)}
               </select><ChevronDown size={16} aria-hidden="true" />
             </div>
             {bank === "Other" && <><label className="other-bank-label" htmlFor="otherBank">Bank name *</label><div className="input-wrap"><input id="otherBank" name="otherBank" placeholder="Enter your bank’s name" maxLength={100} required /></div></>}
             {errors.salaryBank && <span className="field-error" id="salaryBank-error">{errors.salaryBank}</span>}
+          </div>
+          <div className="form-field wide">
+            <label htmlFor="preferredLender">Preferred bank / NBFC (optional)</label>
+            <div className={`input-wrap select-wrap ${errors.preferredLender ? "invalid" : ""}`}>
+              <select id="preferredLender" name="preferredLender" defaultValue="" aria-invalid={!!errors.preferredLender} aria-describedby={`preferredLender-help${errors.preferredLender ? " preferredLender-error" : ""}`}>
+                <option value="">{NO_LENDER_PREFERENCE}</option>
+                <optgroup label="Banks">{PREFERRED_BANKS.map(name => <option key={name}>{name}</option>)}</optgroup>
+                <optgroup label="NBFCs">{PREFERRED_NBFCS.map(name => <option key={name}>{name}</option>)}</optgroup>
+              </select><ChevronDown size={16} aria-hidden="true" />
+            </div>
+            <p className="field-help" id="preferredLender-help">A preference only; lender and product availability depend on your profile.</p>
+            {errors.preferredLender && <span className="field-error" id="preferredLender-error">{errors.preferredLender}</span>}
           </div>
         </div>
         <div className="honeypot" aria-hidden="true"><label htmlFor="website">Website</label><input id="website" name="website" tabIndex={-1} autoComplete="off" /></div>

@@ -37,3 +37,21 @@ test("privacy notice distinguishes local calculator use from submitting an enqui
   assert.match(doc.body.textContent || "", /Google Sheet/);
   assert.match(doc.body.textContent || "", /tap Send in WhatsApp/);
 });
+
+test("lender banner renders the featured groups once with qualifications and no interactive controls", () => {
+  const doc = new JSDOM(renderToStaticMarkup(createElement(Home))).window.document;
+  const banner = doc.querySelector(".lender-banner")!;
+  assert.equal(banner.querySelector("#lender-banner-title")?.textContent, "For salaried applicants across India");
+  const groups = [...banner.querySelectorAll(".lender-banner-group")];
+  assert.deepEqual(groups.map(group => group.querySelector("h2")?.textContent), ["NBFC options", "Bank options"]);
+  assert.deepEqual(groups.map(group => [...group.querySelectorAll("li")].map(li => li.textContent)), [
+    ["Bajaj Finance", "Aditya Birla Capital", "Poonawalla Fincorp", "Cholamandalam (Chola)", "Piramal Finance"],
+    ["Kotak Mahindra Bank", "ICICI Bank", "Axis Bank", "HDFC Bank"],
+  ]);
+  assert.equal(new Set([...banner.querySelectorAll("li")].map(li => li.textContent)).size, 9);
+  assert.equal(banner.querySelectorAll('a,button,input,select,[tabindex],[hidden],[aria-hidden="true"]').length, 0);
+  assert.equal(banner.querySelector(".lender-banner-note")?.textContent, "Available products and lenders depend on your profile and serviceable location. Approval and final terms depend on the lender.");
+  for (const name of ["Tata Capital", "L&T Finance", "Utkarsh Small Finance Bank"]) {
+    assert.ok([...doc.querySelectorAll("#preferredLender option")].some(option => option.textContent === name));
+  }
+});

@@ -12,6 +12,10 @@ const banks = [
   { name: "Kotak Mahindra Bank", file: "kotak.svg" },
   { name: "Bank of Baroda", file: "baroda.png" },
 ];
+const featuredLenders = [
+  { title: "NBFC options", names: ["Bajaj Finance", "Aditya Birla Capital", "Poonawalla Fincorp", "Cholamandalam (Chola)", "Piramal Finance"] },
+  { title: "Bank options", names: ["Kotak Mahindra Bank", "ICICI Bank", "Axis Bank", "HDFC Bank"] },
+];
 const steps = [
   { title: "Send your enquiry", copy: "Choose personal loan, hybrid flexi loan or overdraft, then share your details and required amount or credit limit." },
   { title: "Receive confirmation", copy: "After receipt, WhatsApp opens with a draft message. Review it and tap Send if you want to share it there." },
@@ -31,7 +35,16 @@ export default function Home() {
     <main id="main">
       <LoanJourney intro={
         <section className="journey-heading" aria-labelledby="hero-title">
-          <div className="eyebrow eyebrow-highlight">For salaried applicants across India</div>
+          <aside className="lender-banner" aria-labelledby="lender-banner-title">
+            <p className="lender-banner-title" id="lender-banner-title">For salaried applicants across India</p>
+            <div className="lender-banner-groups">
+              {featuredLenders.map(group => <div className="lender-banner-group" key={group.title}>
+                <h2>{group.title}</h2>
+                <ul>{group.names.map(name => <li key={name}>{name}</li>)}</ul>
+              </div>)}
+            </div>
+            <p className="lender-banner-note">Available products and lenders depend on your profile and serviceable location. Approval and final terms depend on the lender.</p>
+          </aside>
           <h1 id="hero-title">Apply for a personal loan, <span>hybrid flexi loan or overdraft.</span></h1>
           <p className="journey-copy">Explore options from banks and NBFCs. Estimate a personal loan EMI below, or share your requirements for our team to review.</p>
           <div className="journey-rate"><p>Personal loan rates from <strong>9.9% p.a.*</strong></p><p className="rate-disclaimer">*Starting rate. Your final rate, fees and approval depend on the lender and your profile.</p></div>

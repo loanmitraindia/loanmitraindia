@@ -5,8 +5,15 @@
 var LEGACY_HEADERS = ["Reference", "Submitted (UTC)", "Name", "Phone", "Email", "City", "PIN code", "Employer", "Monthly salary", "Requested loan", "Salary bank", "Contact consent", "Consent version"];
 var PRODUCT_HEADERS = LEGACY_HEADERS.concat(["Product interest"]);
 var IST_HEADERS = LEGACY_HEADERS.slice(0, 2).concat(["Submitted (IST)"], LEGACY_HEADERS.slice(2));
-var LEAD_HEADERS = IST_HEADERS.concat(["Product interest"]);
+var IST_PRODUCT_HEADERS = IST_HEADERS.concat(["Product interest"]);
+var LEAD_HEADERS = IST_PRODUCT_HEADERS.concat(["Preferred bank / NBFC"]);
 var PRODUCT_LABELS = { personal_loan: "Personal loan", hybrid_flexi: "Hybrid flexi loan", overdraft: "Overdraft facility", not_sure: "Not sure—please guide me" };
+var PREFERRED_LENDERS = ["", "State Bank of India", "HDFC Bank", "ICICI Bank", "Axis Bank", "Kotak Mahindra Bank", "Punjab National Bank", "Bank of Baroda", "Canara Bank", "Union Bank of India", "IDFC FIRST Bank", "IndusInd Bank", "Utkarsh Small Finance Bank", "Bajaj Finance", "Cholamandalam (Chola)", "Piramal Finance", "Tata Capital", "Aditya Birla Capital", "L&T Finance", "Poonawalla Fincorp"];
+
+function preferredLenderLabel(lead) {
+  var value = lead.preferredLender === undefined ? "" : lead.preferredLender;
+  return typeof value === "string" && PREFERRED_LENDERS.indexOf(value) !== -1 ? (value || "No preference—please guide me") : null;
+}
 
 function productLabel(lead) {
   // Older clients only offered personal loans. Unknown values are never defaulted.
@@ -33,12 +40,21 @@ function ensureColumns(sheet, count) {
   if (existing < count) sheet.insertColumnsAfter(existing, count - existing);
 }
 
+function addHeaderPreservingData(sheet, column, label, lastRow) {
+  ensureColumns(sheet, column);
+  var tail = sheet.getRange(1, column, lastRow, 1);
+  var values = tail.getValues(), formulas = tail.getFormulas();
+  if (values.some(function (row, i) { return row[0] !== "" || formulas[i][0] !== ""; })) sheet.insertColumnsAfter(column - 1, 1);
+  sheet.getRange(1, column, 1, 1).setNumberFormat("@").setValues([[label]]);
+}
+
 function sheetLayout(sheet, allowPending) {
   var count = Math.min(LEAD_HEADERS.length, sheet.getMaxColumns());
   var range = sheet.getRange(1, 1, 1, count);
   var headers = range.getValues()[0], formulas = range.getFormulas()[0];
   var choices = [
-    { headers: LEAD_HEADERS, ist: true, product: true },
+    { headers: LEAD_HEADERS, ist: true, product: true, preferred: true },
+    { headers: IST_PRODUCT_HEADERS, ist: true, product: true },
     { headers: IST_HEADERS, ist: true, product: false },
     { headers: PRODUCT_HEADERS, ist: false, product: true },
     { headers: LEGACY_HEADERS, ist: false, product: false }
@@ -84,12 +100,11 @@ function migrateIndianTimeColumn() {
         report.status = "migrated";
       }
       if (!layout.product) {
-        ensureColumns(sheet, LEAD_HEADERS.length);
-        var tail = sheet.getRange(1, 15, lastRow, 1);
-        var tailValues = tail.getValues(), tailFormulas = tail.getFormulas();
-        // Preserve operator notes or formulas after the known schema by shifting them.
-        if (tailValues.some(function (row, i) { return row[0] !== "" || tailFormulas[i][0] !== ""; })) sheet.insertColumnsAfter(14, 1);
-        sheet.getRange(1, 15, 1, 1).setNumberFormat("@").setValues([["Product interest"]]);
+        addHeaderPreservingData(sheet, 15, "Product interest", lastRow);
+        report.status = "migrated";
+      }
+      if (!layout.preferred) {
+        addHeaderPreservingData(sheet, 16, "Preferred bank / NBFC", lastRow);
         report.status = "migrated";
       }
       if (lastRow > 1) {
@@ -120,8 +135,9 @@ function migrateIndianTimeColumn() {
   } finally { lock.releaseLock(); }
 }
 
-// Retained for operators following older setup instructions; now upgrades both columns.
+// All entry points upgrade to the current layout; older instructions remain safe.
 function migrateProductInterestColumn() { return migrateIndianTimeColumn(); }
+function migratePreferredLenderColumn() { return migrateIndianTimeColumn(); }
 
 function jsonReply(value) {
   return ContentService.createTextOutput(JSON.stringify(value)).setMimeType(ContentService.MimeType.JSON);
@@ -130,6 +146,7 @@ function jsonReply(value) {
 function validLead(lead) {
   if (!lead || typeof lead !== "object" || Array.isArray(lead)) return false;
   if (!productLabel(lead)) return false;
+  if (!preferredLenderLabel(lead)) return false;
   var bounds = { fullName: [2, 100], email: [3, 254], city: [2, 100], employer: [2, 150], salaryBank: [2, 100], consentVersion: [1, 80] };
   for (var name in bounds) {
     if (typeof lead[name] !== "string" || lead[name].trim().length < bounds[name][0] || lead[name].length > bounds[name][1]) return false;
@@ -176,7 +193,7 @@ function doPost(e) {
       ensureColumns(sheet, LEAD_HEADERS.length);
       sheet.getRange(1, 1, 1, LEAD_HEADERS.length).setValues([LEAD_HEADERS]);
       lastRow = 1;
-      layout = { ist: true, product: true };
+      layout = { ist: true, product: true, preferred: true };
     } else {
       layout = sheetLayout(sheet, false);
       if (!layout) return jsonReply({ ok: false, error: "header_mismatch" });
@@ -188,6 +205,7 @@ function doPost(e) {
       "INR " + lead.salary.toLocaleString("en-IN"), "INR " + lead.loanAmount.toLocaleString("en-IN"), lead.salaryBank, "Yes", lead.consentVersion];
     if (layout.ist) row.splice(2, 0, formatSubmittedIst(lead.submittedAt));
     if (layout.product) row.push(productLabel(lead));
+    if (layout.preferred) row.push(preferredLenderLabel(lead));
     row = row.map(safeCell);
     sheet.getRange(lastRow + 1, 1, 1, row.length).setNumberFormat("@").setValues([row]);
     SpreadsheetApp.flush();

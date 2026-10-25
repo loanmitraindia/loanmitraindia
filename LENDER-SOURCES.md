@@ -17,3 +17,17 @@ Product distinctions used in the FAQ:
 - https://www.icici.bank.in/personal-banking/loans/personal-loan/overdraft-against-salary/faqs (salary overdraft; interest on utilised amount)
 
 The personal-loan calculator uses standard reducing-balance EMI math. It does not model flexi drawdowns, interest-only phases or daily overdraft utilisation.
+
+## Optional lender selector — 25 October 2026
+
+The client requested these additional names for lender preferences. They are text-only options, separate from salary-account banks. Utkarsh is grouped under Banks; the others below are under NBFCs. Official sources verify the names, not LoanMitra's relationships or availability for an individual applicant.
+
+| Display name | Entity / official source |
+| --- | --- |
+| Cholamandalam (Chola) | Cholamandalam Investment and Finance Company Limited — https://www.cholamandalam.com/get-consumer-small-enterprise-loans |
+| Piramal Finance | https://www.piramalfinance.com/personal-loan |
+| Utkarsh Small Finance Bank | https://www.utkarsh.bank.in/personal/loans/additional-loans/personal-loan |
+| L&T Finance | https://www.ltfinance.com/personal-loan |
+| Poonawalla Fincorp | Poonawalla Fincorp Limited — https://poonawallafincorp.com/digital-partnership |
+
+The selector also includes Bajaj Finance, Tata Capital and Aditya Birla Capital from the sources above, plus the existing named salary banks. Default: “No preference—please guide me”. No new logos are used, so no asset licensing assumptions are introduced. The existing three-name lender section and salary-account marquee are unchanged.

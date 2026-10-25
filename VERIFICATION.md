@@ -1,6 +1,35 @@
-# Verification — 24 October 2026
+# Verification — 26 October 2026
 
-## Indian-time submission column (current revision)
+## Marquee spacing correction
+
+- Both moving lists used space-between within a 1240px group but only a small trailing padding between copies, creating a visibly tighter seam. Changed moving groups to space-around with symmetric item margins and no asymmetric group padding. Adjacent half-spaces now combine into the same gap as internal items. Group widths, 40-second speed and reverse bank direction remain unchanged; mobile/reduced-motion grids retain zero item margins.
+- Browser geometry at 1024, 1440 and 1920px confirms every bank gap, including the join, is approximately 46.67px; every feature gap is approximately 106.95px (subpixel rounding under 0.02px). Both copies remain 1240px wide. No horizontal overflow; at 360px both marquees are static with zero item margins. Screenshot and measurements: `artifacts/marquee-spacing/`.
+- All 9 motion tests, standalone TypeScript and production build passed. The sandbox build hit a generated-directory EPERM; the approved rerun succeeded. Preview tab/server stopped and viewport reset. No API or form changes.
+
+## Banner typography and motion follow-up
+
+- Audience title increased to 30px desktop, 26px tablet (640–1000px), and 22px mobile. Replaced the whole-panel entrance with separate title, NBFC, bank and note entrances, staggered at 0/100/200/300ms and complete within 700ms. Each runs once with 8px movement; all rules remain inside the no-reduced-motion media query. No nested entrance transforms or continuously moving text.
+- All 53 tests, standalone TypeScript and production build pass. Browser measurements at 1440, 768 and 360px confirm the intended font sizes, settled full opacity, one animation iteration and no horizontal overflow. Desktop/mobile screenshots inspected; updated evidence in `artifacts/lender-banner/updated-*`. No physical phone or OS reduced-motion toggle check was performed. Preview tab/server stopped and viewport reset.
+
+## Static lender banner (current revision)
+
+- Replaced the green audience bar with a server-rendered sage banner containing the selected five NBFC and four bank names, semantic group headings/lists and the lender/location qualification. Desktop groups are side by side; below 640px they stack. Names are plain text with no keyboard stops. Main headline, tools, lower lender section, marquees and complete dropdown choices are preserved.
+- Added one 350ms CSS entrance from 6px offset and 85% opacity, exclusively under `prefers-reduced-motion: no-preference`. No client component, dependency, looping motion or hidden initial content. Removed the global 30px important eyebrow override and obsolete bar styles; calculator eyebrow now measures its intended 10px.
+- Final automated suite: **53 passed**, including exact featured-name/grouping, qualification, server-rendered content and retained dropdown coverage. Standalone TypeScript, production build and diff whitespace checks passed after source edits. This banner change makes no backend, schema, environment or Apps Script modifications.
+- Production browser checks at **360, 390, 768, 1024 and 1440px** found no horizontal overflow. Verified stacked groups at phone widths and parallel groups above the breakpoint; title sizes are 18px/22px. Inspected mobile and desktop screenshots, and confirmed the banner introduces no interactive controls. The EMI navigation anchor and amount handoff still copy ₹3,00,000 and focus the form amount field. No captured console warnings/errors.
+- Inspected the delivered CSS animation rule to confirm its reduced-motion media gate and single iteration. An OS preference toggle, physical-phone check and live delivery test were not performed. Existing interaction/delivery regression tests remain mocked. Screenshots and measurements: `artifacts/lender-banner/` (five viewport images and `layout-checks.json`). Temporary preview tab, viewport override and server cleaned up.
+
+## Optional lender preference (previous revision)
+
+- Added a separate optional Preferred bank / NBFC selector, defaulting to No preference—please guide me. Salary-account bank choices remain unchanged. Bank/NBFC optgroups include all eight client-requested names; Utkarsh Small Finance Bank is under Banks. Lender names and official sources are documented in LENDER-SOURCES.md.
+- Added validated `preferredLender`, with omitted legacy values defaulting to no preference. Email, Apps Script payloads and encoded WhatsApp drafts carry the readable choice. Updated the privacy collection disclosure and consent version; no new dependencies, environment variables or response shapes.
+- Sheets now have 16 columns: IST remains C, Product interest O and Preferred bank / NBFC P. The locked `migratePreferredLenderColumn` entry point upgrades recognised 13/14/15-column layouts, preserves existing rows and trailing notes/formulas, leaves historical preferences blank and safely resumes interrupted migration. Older migration entry points upgrade to the same layout.
+- Final automated suite: **52 passed**. Coverage includes all allowed lender values across delivery channels, invalid values, omitted legacy fields, separate salary-bank values, grouping/defaults, retention on failure and amount handoff, historical sheet preservation, repeat migration, interrupted migration and lock contention. Standalone TypeScript and production build passed after source edits. The sandbox build initially hit Windows EPERM while creating a generated directory; rerunning with approved access completed successfully.
+- Production browser preview checked at **1440px and 360px**: no horizontal overflow; lender selection survives calculator amount handoff independently of salary bank; mobile select text is 16px, longest bank name fits, helper text wraps, keyboard Tab reaches consent. No captured browser warnings/errors. Screenshots: `artifacts/lender-preference/desktop.png` and `mobile-360.png`. Temporary viewport/tab/server cleaned up.
+- Live Gmail, Sheets and WhatsApp delivery were not exercised; automated delivery tests use mocks. Physical-phone testing and other viewport sizes were not repeated for this field addition. No live enquiry was submitted.
+- **Activation pending:** the live Apps Script deployment and Google sheet have not been changed. Follow README: deploy the updated receiver, run `migratePreferredLenderColumn`, then publish the website. Existing deployment URL and secrets stay unchanged.
+
+## Indian-time submission column (previous revision)
 
 - Added `Submitted (IST)` as column C, derived from the existing UTC instant with `Utilities.formatDate` and the explicit `Asia/Kolkata` timezone. Example: `24 Oct 2026, 03:30:00 PM IST`. UTC, website, API payloads, email/WhatsApp timestamps and environment settings are unchanged.
 - New sheets use 15 columns; Product interest is column O. The receiver remains compatible with the original 13-column and product-enabled 14-column layouts during deployment. Values are written according to the recognised layout and deduplication still uses the reference in column A.

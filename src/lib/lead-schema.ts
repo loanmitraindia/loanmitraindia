@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { PREFERRED_LENDERS } from "./lenders";
 
 export const PRODUCT_LABELS = {
   personal_loan: "Personal loan",
@@ -18,10 +19,11 @@ export const leadSchema = z.object({
   salary: z.number().finite().min(18000, "A minimum monthly salary of ₹18,000 is required.").max(100000000),
   loanAmount: z.number().finite().positive("Enter the loan amount you need.").max(100000000),
   salaryBank: z.string().trim().min(2, "Enter your salary account bank.").max(100),
+  preferredLender: z.enum(PREFERRED_LENDERS, { error: "Choose a listed bank / NBFC or leave no preference." }).default(""),
   consent: z.literal(true, { error: "Please agree to be contacted about your enquiry." }),
   website: z.string().max(0, "Invalid submission.").optional().default(""),
 });
 
 export type LeadInput = z.infer<typeof leadSchema>;
 export type Lead = LeadInput & { id: string; submittedAt: string; consentVersion: string };
-export const CONSENT_VERSION = "2026-10-23-v3";
+export const CONSENT_VERSION = "2026-10-25-v4";

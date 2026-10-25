@@ -27,6 +27,32 @@ function completeForm() {
   return ui;
 }
 
+test("optional lender selection groups banks/NBFCs and survives failed submission separately from salary bank", async () => {
+  notifications();
+  let payload: Record<string, unknown> = {};
+  mock.method(globalThis, "fetch", async (_: unknown, init?: RequestInit) => {
+    payload = JSON.parse(String(init?.body));
+    return Response.json({ error: "Service unavailable" }, { status: 503 });
+  });
+  const ui = completeForm();
+  const preferred = ui.getByLabelText(/Preferred bank/) as HTMLSelectElement;
+  const salary = ui.getByLabelText(/Salary account bank/) as HTMLSelectElement;
+  assert.equal(preferred.required, false); assert.equal(preferred.value, "");
+  assert.match(preferred.options[0].text, /No preference/);
+  assert.equal([...preferred.options].find(option => option.value === "Utkarsh Small Finance Bank")?.parentElement?.getAttribute("label"), "Banks");
+  for (const name of ["Bajaj Finance", "Cholamandalam (Chola)", "Piramal Finance", "Tata Capital", "Aditya Birla Capital", "L&T Finance", "Poonawalla Fincorp"]) {
+    assert.equal([...preferred.options].find(option => option.value === name)?.parentElement?.getAttribute("label"), "NBFCs");
+    assert.equal([...salary.options].some(option => option.value === name), false);
+  }
+  fireEvent.change(preferred, { target: { value: "Piramal Finance" } });
+  fireEvent.submit(ui.container.querySelector("form")!);
+  await ui.findByText("Service unavailable");
+  assert.equal(payload.preferredLender, "Piramal Finance");
+  assert.equal(payload.salaryBank, "HDFC Bank");
+  assert.equal(preferred.value, "Piramal Finance");
+  assert.equal(salary.value, "HDFC Bank");
+});
+
 test("product selection is required in the UI and retained after a failed request", async () => {
   notifications();
   const fetch = mock.method(globalThis, "fetch", async () => Response.json({ error: "Service unavailable" }, { status: 503 }));

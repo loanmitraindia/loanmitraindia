@@ -2,6 +2,7 @@ import nodemailer from "nodemailer";
 import { z } from "zod";
 import type { Lead } from "./lead-schema";
 import { PRODUCT_LABELS } from "./lead-schema";
+import { NO_LENDER_PREFERENCE } from "./lenders";
 
 export const requiredEnv = [
   "PRIVACY_CONTACT_EMAIL", "GMAIL_USER", "GMAIL_APP_PASSWORD", "LEAD_EMAIL_TO",
@@ -33,7 +34,8 @@ export function leadLines(lead: Lead): string[][] {
     ["City", lead.city], ["PIN code", lead.pincode], ["Employer", lead.employer],
     ["Interested in", PRODUCT_LABELS[lead.productInterest]],
     ["Monthly salary", rupees(lead.salary)], ["Loan amount / credit limit required", rupees(lead.loanAmount)],
-    ["Salary bank", lead.salaryBank], ["Contact consent", "Yes"], ["Consent version", lead.consentVersion],
+    ["Salary bank", lead.salaryBank], ["Preferred bank / NBFC", lead.preferredLender || NO_LENDER_PREFERENCE],
+    ["Contact consent", "Yes"], ["Consent version", lead.consentVersion],
   ].map(([label, value]) => [label, singleLine(value)]);
 }
 

@@ -6,9 +6,10 @@ import type Mail from "nodemailer/lib/mailer";
 import { POST } from "../src/app/api/leads/route";
 import { appendSheet, buildWhatsAppUrl, missingConfiguration, requiredEnv } from "../src/lib/delivery";
 import { CONSENT_VERSION, leadSchema, PRODUCT_LABELS } from "../src/lib/lead-schema";
+import { PREFERRED_LENDERS, NO_LENDER_PREFERENCE } from "../src/lib/lenders";
 
 const valid = { fullName: "Test Applicant", phone: "9876543210", email: "applicant@example.com", city: "Pune", pincode: "411001", employer: "Example Company", salary: 18000, loanAmount: 300000, salaryBank: "Example Bank", consent: true as const, website: "" };
-const lead = { ...valid, productInterest: "personal_loan" as const, id: "d7334c43-1435-4e59-9f5b-74a0f47bde20", submittedAt: "2026-10-22T10:00:00.000Z", consentVersion: CONSENT_VERSION, leadSchema, PRODUCT_LABELS };
+const lead = { ...valid, preferredLender: "" as const, productInterest: "personal_loan" as const, id: "d7334c43-1435-4e59-9f5b-74a0f47bde20", submittedAt: "2026-10-22T10:00:00.000Z", consentVersion: CONSENT_VERSION };
 const oldEnv = { ...process.env };
 
 test("product interest validates all choices and keeps legacy requests compatible", async () => {
@@ -143,4 +144,26 @@ test("limits repeated submissions", async () => {
   for (let i = 0; i < 3; i++) assert.equal((await POST(request({ ...valid, phone: "9876543213" }))).status, 200);
   assert.equal((await POST(request({ ...valid, phone: "9876543213" }))).status, 429);
   assert.equal(mail.length, 3); assert.equal(calls.length, 3);
+});
+
+test("optional lender preferences validate and reach email, Sheets and encoded WhatsApp drafts", async () => {
+  assert.equal(leadSchema.parse(valid).preferredLender, "");
+  for (const preferredLender of ["Unknown", null, 1]) {
+    assert.equal((await POST(request({ ...valid, preferredLender }))).status, 400);
+  }
+  assert.equal(calls.length + mail.length, 0);
+  let index = 0;
+  for (const preferredLender of PREFERRED_LENDERS) {
+    const response = await POST(request({ ...valid, phone: String(9876500000 + index++), preferredLender }));
+    assert.equal(response.status, 200);
+    const result = await response.json();
+    const line = `Preferred bank / NBFC: ${preferredLender || NO_LENDER_PREFERENCE}`;
+    assert.ok(String(mail.at(-1)!.text).includes(line));
+    const payload = JSON.parse(String(calls.at(-1)!.init.body)).lead;
+    assert.equal(payload.preferredLender, preferredLender);
+    assert.equal(payload.salaryBank, valid.salaryBank);
+    const url = new URL(result.whatsappUrl);
+    assert.equal([...url.searchParams.keys()].length, 1);
+    assert.ok(url.searchParams.get("text")!.includes(line));
+  }
 });

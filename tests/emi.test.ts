@@ -118,6 +118,7 @@ test("handoff copies only on click, preserves other fields and accepts repeated 
   const amount = ui.getByLabelText("Loan amount");
   assert.equal(loan.value, "");
   fireEvent.change(name, { target: { value: "Existing Applicant" } });
+  fireEvent.change(ui.getByLabelText(/Preferred bank/), { target: { value: "L&T Finance" } });
   fireEvent.change(ui.getByLabelText(/Interested in/), { target: { value: "overdraft" } });
   fireEvent.click(ui.getByRole("button", { name: "Enquire for this amount" }));
   assert.equal(loan.value, "3,00,000"); assert.equal(document.activeElement, loan);
@@ -128,6 +129,7 @@ test("handoff copies only on click, preserves other fields and accepts repeated 
   assert.equal(loan.value, "425000");
   fireEvent.click(ui.getByRole("button", { name: "Enquire for this amount" }));
   assert.equal(loan.value, "5,00,000");
+  assert.equal((ui.getByLabelText(/Preferred bank/) as HTMLSelectElement).value, "L&T Finance");
   fireEvent.change(loan, { target: { value: "600000" } });
   fireEvent.click(ui.getByRole("button", { name: "Enquire for this amount" }));
   assert.equal(loan.value, "5,00,000");

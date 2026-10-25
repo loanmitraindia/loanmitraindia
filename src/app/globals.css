@@ -71,16 +71,10 @@ h1,h2,h3 {
 }
 .eyebrow {
   display: block;
-  font-size: 30px !important;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 1.7px;
   line-height: 1.7;
-}
-.eyebrow-highlight {
-  background-color: #256751;
-  color: #FFF !important;
-  padding: 5px;
-  border-radius: 8px;
 }
 .site-header {
   height: 96px;
@@ -673,17 +667,18 @@ details p {
   .bank-marquee[data-motion=true] .bank-grid {
     display: flex;
     flex-shrink: 0;
-    gap: 12px;
-    padding-right: 12px;
+    gap: 0;
+    padding: 0;
     border: 0;
     border-radius: 0;
     background: transparent;
     overflow: visible;
     min-width: 1240px;
-    justify-content: space-between;
+    justify-content: space-around;
   }
   .bank-marquee[data-motion=true] .bank-tile {
     width: 160px;
+    margin-inline: 6px;
     flex-shrink: 0;
     border: 1px solid var(--line);
     border-radius: 8px;
@@ -749,11 +744,13 @@ details p {
   width: auto;
   min-width: 1240px;
   flex-wrap: nowrap;
-  gap: 36px;
-  justify-content: space-between;
+  gap: 0;
+  justify-content: space-around;
   white-space: nowrap;
-  padding: 23px 40px 23px 0;
+  padding: 23px 0;
 }
+/* Equal half-gaps at both group edges combine into a full gap at the loop seam. */
+.feature-strip[data-motion=true] .feature-list li { margin-inline: 18px; }
 .header-cta svg,.text-cta svg,.submit-button svg:not(.spin) {
   transition: transform .2s ease;
 }
@@ -821,6 +818,7 @@ details p {
     padding: 23px 0;
     gap: 15px 24px;
   }
+  .feature-strip[data-motion=true] .feature-list li { margin-inline: 0; }
   .feature-copy {
     display: none!important;
   }
@@ -1046,7 +1044,33 @@ details p {
 }
 /* One compact introduction and a shared two-tool workspace. */
 .journey-intro { padding-top: 32px; margin-bottom: 24px; }
-.journey-heading .eyebrow { color: var(--green); font-size: 16px; line-height: 1.6; letter-spacing: 1px; }
+.field-help { margin-top: 6px; color: var(--text); font-size: 12px; line-height: 1.6; }
+.lender-banner { padding: 20px; margin-bottom: 24px; border: 1px solid #d4dfd5; border-left: 3px solid var(--green); border-radius: 12px; background: #edf1eb; }
+.lender-banner-title { color: var(--navy); font: 700 30px/1.35 var(--heading); letter-spacing: -.5px; }
+.lender-banner-groups { display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; margin-top: 16px; }
+.lender-banner-group { min-width: 0; }
+.lender-banner-group + .lender-banner-group { border-left: 1px solid #cbd8ce; padding-left: 24px; }
+.lender-banner-group h2 { color: var(--green); font: 700 12px/1.5 var(--body); letter-spacing: .8px; text-transform: uppercase; }
+.lender-banner-group ul { display: flex; flex-wrap: wrap; gap: 6px 16px; list-style: none; padding: 0; margin: 8px 0 0; }
+.lender-banner-group li { display: flex; align-items: baseline; gap: 8px; font-size: 14px; line-height: 1.7; }
+.lender-banner-group li::before { content: ""; flex: 0 0 3px; width: 3px; height: 3px; border-radius: 50%; background: var(--green); align-self: center; }
+.lender-banner-note { margin-top: 14px; font-size: 12px; line-height: 1.6; color: var(--text); }
+@keyframes lender-banner-enter { from { opacity: .65; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@media (prefers-reduced-motion:no-preference) {
+  .lender-banner-title { animation: lender-banner-enter 500ms cubic-bezier(.22,1,.36,1) both; }
+  .lender-banner-group { animation: lender-banner-enter 500ms cubic-bezier(.22,1,.36,1) 100ms both; }
+  .lender-banner-group + .lender-banner-group { animation-delay: 200ms; }
+  .lender-banner-note { animation: lender-banner-enter 400ms ease-out 300ms both; }
+}
+@media (min-width:640px) and (max-width:1000px) {
+  .lender-banner-title { font-size: 26px; }
+}
+@media (max-width:639px) {
+  .lender-banner { padding: 16px; }
+  .lender-banner-title { font-size: 22px; letter-spacing: -.3px; }
+  .lender-banner-groups { grid-template-columns: 1fr; gap: 14px; margin-top: 14px; }
+  .lender-banner-group + .lender-banner-group { border-left: 0; border-top: 1px solid #cbd8ce; padding: 14px 0 0; }
+}
 .journey-heading h1 { margin-top: 10px; font-size: clamp(30px, 3vw, 42px); line-height: 1.25; letter-spacing: -1.6px; }
 .journey-heading h1 span { color: var(--orange-dark); }
 .journey-copy { margin-top: 12px; max-width: 840px; color: var(--text); font-size: 15px; line-height: 1.75; }
@@ -1087,13 +1111,11 @@ details p {
 }
 @media (max-width:860px) {
   .journey-intro { padding-top: 28px; }
-  .journey-heading .eyebrow { font-size: 14px; }
   .journey-heading h1 { font-size: 34px; }
   .journey-eligibility { gap: 8px 18px; }
 }
 @media (max-width:480px) {
   .journey-intro { padding-top: 24px; }
-  .journey-heading .eyebrow { font-size: 14px; line-height: 1.6; letter-spacing: 1px; }
   .lender-list { grid-template-columns: 1fr; gap: 8px; }
   .lender-list li { padding: 15px 16px; }
   .journey-heading h1 { font-size: 30px; letter-spacing: -1px; }
