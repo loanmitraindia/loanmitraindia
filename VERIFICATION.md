@@ -1,5 +1,13 @@
 # Verification — 26 October 2026
 
+## LoanMitra India wordmark and LM favicon
+
+- Added a transparent outlined wordmark (350:96 SVG), original block-letter LM monogram (64px SVG), root SVG favicon, multi-image ICO (16/32/48px) and opaque 180px Apple icon. Palette: navy/ivory with a small saffron accent beside INDIA. Wordmark glyphs derive from Manrope at weight 750; source font, SIL OFL, source URL/hash and deterministic authoring scripts are retained. No runtime dependency or environment changes.
+- Replaced the live-text/tilted-rupee header branding with the SVG, preserving the accessible homepage link. Logo widths: 200px desktop/tablet, 165px phones; intrinsic dimensions prevent layout shifts. Removed obsolete branding CSS. Icons use Next.js root file conventions and root-relative URLs; no Vercel, GoDaddy or DNS changes were made.
+- Final automated suite: **56 passed**. Tests validate SVG independence from fonts/external resources, matching reusable/root monograms, ICO directory entries and embedded dimensions, opaque Apple icon and accessible header integration. Standalone TypeScript, production build and whitespace checks passed after source edits.
+- Inspected actual-size wordmarks at 200/165px and monograms at 16/32/48px on light/dark backgrounds plus the 180px Apple image. Browser checked at 360, 390, 768 and 1440px: images loaded, intended widths, no horizontal overflow or Apply now overlap. Confirmed keyboard-visible focus, homepage link and return from privacy. Both pages emit ICO/SVG/Apple icon links. All seven checked page/asset URLs return HTTP 200 with expected HTML/SVG/ICO/PNG content types. No captured browser errors/warnings.
+- Evidence: `artifacts/brand-review/asset-sizes.png`, `header-*.png`, `layout-checks.json`. Browser checks use a local Chromium preview; physical Apple home-screen installation, Safari and a deployed custom domain remain untested. Preview tab/server stopped and viewport override reset. Regeneration and download assets are documented in `public/brand/README.md`.
+
 ## Marquee spacing correction
 
 - Both moving lists used space-between within a 1240px group but only a small trailing padding between copies, creating a visibly tighter seam. Changed moving groups to space-around with symmetric item margins and no asymmetric group padding. Adjacent half-spaces now combine into the same gap as internal items. Group widths, 40-second speed and reverse bank direction remain unchanged; mobile/reduced-motion grids retain zero item margins.

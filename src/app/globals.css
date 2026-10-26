@@ -88,36 +88,15 @@ h1,h2,h3 {
   gap: 24px;
 }
 .brand {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 10px;
-  font-family: var(--heading);
-  font-size: 27px;
-  font-weight: 800;
-  letter-spacing: -1.4px;
+  flex-shrink: 0;
+  min-height: 44px;
 }
-.brand-icon {
-  display: flex;
-  width: 40px;
-  height: 43px;
-  align-items: center;
-  justify-content: center;
-  background: var(--navy);
-  border-radius: 11px 11px 11px 2px;
-  color: white;
-  transform: rotate(-4deg);
-}
-.brand-icon svg {
-  transform: rotate(4deg);
-}
-.brand-light {
-  font-weight: 500;
-}
-.brand-india {
+.brand img {
   display: block;
-  font: 600 8px var(--body);
-  letter-spacing: 4.5px;
-  margin: 1px 0 0 2px;
+  width: 200px;
+  height: auto;
 }
 .header-inner nav {
   display: flex;
@@ -888,16 +867,7 @@ details p {
   .container {
     width: calc(100% - 36px);
   }
-  .brand {
-    font-size: 23px;
-  }
-  .brand-icon {
-    width: 34px;
-    height: 37px;
-  }
-  .brand-india {
-    font-size: 7px;
-  }
+  .brand img { width: 165px; }
   .header-inner {
     gap: 12px;
   }

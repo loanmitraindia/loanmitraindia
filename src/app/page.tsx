@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight, BriefcaseBusiness, ChevronDown, Globe2, IndianRupee, Wallet } from "lucide-react";
+import { ArrowRight, ArrowUpRight, BriefcaseBusiness, ChevronDown, Globe2, Wallet } from "lucide-react";
 import LoanJourney from "@/components/loan-journey";
 import { BankMarquee, FeatureStrip, Reveal } from "@/components/page-motion";
 
@@ -27,7 +27,7 @@ export default function Home() {
     <a className="skip-link" href="#main">Skip to content</a>
     <header className="site-header">
       <div className="container header-inner">
-        <Link className="brand" href="/" aria-label="LoanMitra India home"><span className="brand-icon"><IndianRupee size={23} strokeWidth={2.3} /></span><span>loan<span className="brand-light">mitra</span><span className="brand-india">INDIA</span></span></Link>
+        <Link className="brand" href="/" aria-label="LoanMitra India home"><Image src="/brand/loanmitra-india.svg" alt="" width={350} height={96} unoptimized /></Link>
         <nav aria-label="Main navigation"><a href="#emi-calculator">EMI calculator</a><a href="#apply">Loan enquiry</a><a href="#terms">FAQs</a></nav>
         <a className="header-cta" href="#apply">Apply now <ArrowUpRight size={16} aria-hidden="true" /></a>
       </div>

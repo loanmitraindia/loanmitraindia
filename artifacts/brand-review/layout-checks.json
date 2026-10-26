@@ -1,0 +1,98 @@
+[
+  {
+    "icons": [
+      {
+        "href": "/favicon.ico?favicon.2df7g-oejyarf.ico",
+        "rel": "icon",
+        "type": "image/x-icon"
+      },
+      {
+        "href": "/icon.svg?icon.0memdzty_pf1z.svg",
+        "rel": "icon",
+        "type": "image/svg+xml"
+      },
+      {
+        "href": "/apple-icon.png?apple-icon.0bxrlaf-3d7kf.png",
+        "rel": "apple-touch-icon",
+        "type": "image/png"
+      }
+    ],
+    "logoLoaded": true,
+    "logoWidth": 200,
+    "overflow": false,
+    "overlap": false,
+    "width": 1440
+  },
+  {
+    "icons": [
+      {
+        "href": "/favicon.ico?favicon.2df7g-oejyarf.ico",
+        "rel": "icon",
+        "type": "image/x-icon"
+      },
+      {
+        "href": "/icon.svg?icon.0memdzty_pf1z.svg",
+        "rel": "icon",
+        "type": "image/svg+xml"
+      },
+      {
+        "href": "/apple-icon.png?apple-icon.0bxrlaf-3d7kf.png",
+        "rel": "apple-touch-icon",
+        "type": "image/png"
+      }
+    ],
+    "logoLoaded": true,
+    "logoWidth": 200,
+    "overflow": false,
+    "overlap": false,
+    "width": 768
+  },
+  {
+    "icons": [
+      {
+        "href": "/favicon.ico?favicon.2df7g-oejyarf.ico",
+        "rel": "icon",
+        "type": "image/x-icon"
+      },
+      {
+        "href": "/icon.svg?icon.0memdzty_pf1z.svg",
+        "rel": "icon",
+        "type": "image/svg+xml"
+      },
+      {
+        "href": "/apple-icon.png?apple-icon.0bxrlaf-3d7kf.png",
+        "rel": "apple-touch-icon",
+        "type": "image/png"
+      }
+    ],
+    "logoLoaded": true,
+    "logoWidth": 165,
+    "overflow": false,
+    "overlap": false,
+    "width": 390
+  },
+  {
+    "icons": [
+      {
+        "href": "/favicon.ico?favicon.2df7g-oejyarf.ico",
+        "rel": "icon",
+        "type": "image/x-icon"
+      },
+      {
+        "href": "/icon.svg?icon.0memdzty_pf1z.svg",
+        "rel": "icon",
+        "type": "image/svg+xml"
+      },
+      {
+        "href": "/apple-icon.png?apple-icon.0bxrlaf-3d7kf.png",
+        "rel": "apple-touch-icon",
+        "type": "image/png"
+      }
+    ],
+    "logoLoaded": true,
+    "logoWidth": 165,
+    "overflow": false,
+    "overlap": false,
+    "width": 360
+  }
+]
