@@ -13,7 +13,7 @@ const banks = [
   { name: "Bank of Baroda", file: "baroda.png" },
 ];
 const featuredLenders = [
-  { title: "NBFC options", names: ["Bajaj Finance", "Aditya Birla Capital", "Poonawalla Fincorp", "Cholamandalam (Chola)", "Piramal Finance"] },
+  { title: "NBFC options", names: ["Bajaj Financers", "Aditya Birla Capital", "Poonawalla Fincorp", "Cholamandalam (Chola)", "Piramal Finance"] },
   { title: "Bank options", names: ["Kotak Mahindra Bank", "ICICI Bank", "Axis Bank", "HDFC Bank"] },
 ];
 const steps = [
