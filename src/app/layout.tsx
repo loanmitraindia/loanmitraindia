@@ -16,6 +16,14 @@ export default function RootLayout({
   return (
     <html lang="en-IN">
       <body>
+        {/* Google AdSense */}
+        <Script
+          id="google-adsense"
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6859612379507256"
+          crossOrigin="anonymous"
+          strategy="beforeInteractive"
+        />
+
         {/* Google Ads - Initialize Google Tag */}
         <Script id="google-ads-init" strategy="afterInteractive">
           {`
@@ -35,6 +43,7 @@ export default function RootLayout({
         />
 
         {children}
+
         <Notifications />
       </body>
     </html>
