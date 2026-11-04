@@ -8,6 +8,11 @@ export const metadata: Metadata = {
   title: "LoanMitra India | Personal loans, hybrid flexi & overdraft enquiries",
   description:
     "Explore personal loan, hybrid flexi loan and overdraft options for salaried applicants across India. Estimate personal loan EMIs with an adjustable rate calculator. Subject to lender eligibility.",
+
+  // Google AdSense site verification
+  other: {
+    "google-adsense-account": "ca-pub-6859612379507256",
+  },
 };
 
 export default function RootLayout({
@@ -16,7 +21,7 @@ export default function RootLayout({
   return (
     <html lang="en-IN">
       <body>
-        {/* Google AdSense */}
+        {/* Google AdSense Script */}
         <Script
           id="google-adsense"
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6859612379507256"
