@@ -1,6 +1,16 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight, BriefcaseBusiness, ChevronDown, Globe2, Wallet } from "lucide-react";
+// import { ArrowRight, ArrowUpRight, BriefcaseBusiness, ChevronDown, Globe2, Wallet } from "lucide-react";
+import {
+  ArrowRight,
+  ArrowUpRight,
+  BriefcaseBusiness,
+  ChevronDown,
+  Globe2,
+  Mail,
+  Phone,
+  Wallet,
+} from "lucide-react";
 import LoanJourney from "@/components/loan-journey";
 import { BankMarquee, FeatureStrip, Reveal } from "@/components/page-motion";
 
@@ -28,7 +38,13 @@ export default function Home() {
     <header className="site-header">
       <div className="container header-inner">
         <Link className="brand" href="/" aria-label="LoanMitra India home"><Image src="/brand/loanmitra-india.svg" alt="" width={350} height={96} unoptimized /></Link>
-        <nav aria-label="Main navigation"><a href="#emi-calculator">EMI calculator</a><a href="#apply">Loan enquiry</a><a href="#terms">FAQs</a></nav>
+        {/* <nav aria-label="Main navigation"><a href="#emi-calculator">EMI calculator</a><a href="#apply">Loan enquiry</a><a href="#terms">FAQs</a></nav> */}
+        <nav aria-label="Main navigation">
+          <a href="#emi-calculator">EMI calculator</a>
+          <a href="#apply">Loan enquiry</a>
+          <a href="#terms">FAQs</a>
+          <a href="#contact">Contact</a>
+        </nav>
         <a className="header-cta" href="#apply">Apply now <ArrowUpRight size={16} aria-hidden="true" /></a>
       </div>
     </header>
@@ -87,6 +103,41 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <section className="contact-section" id="contact" aria-labelledby="contact-title">
+        <div className="container contact-inner">
+          <div className="contact-copy">
+            <span className="eyebrow">CONTACT US</span>
+            <h2 id="contact-title">Need help with your loan enquiry?</h2>
+            <p>
+              Contact the LoanMitra India team by email or phone. We’ll help you
+              understand the available options for your requirements.
+            </p>
+          </div>
+      
+          <div className="contact-links">
+            <a
+              className="contact-card"
+              href="mailto:loanmitraindiaofficial@gmail.com"
+            >
+              <Mail size={24} aria-hidden="true" />
+              <span>
+                <small>Email us</small>
+                <strong>loanmitraindiaofficial@gmail.com</strong>
+              </span>
+            </a>
+      
+            <a className="contact-card" href="tel:+918112204924">
+              <Phone size={24} aria-hidden="true" />
+              <span>
+                <small>Call us</small>
+                <strong>+91 81122 04924</strong>
+              </span>
+            </a>
+          </div>
+        </div>
+      </section>
+      
     </main>
     <footer className="site-footer"><div className="container footer-inner"><p>© {new Date().getFullYear()} LoanMitra India</p><div><a href="#terms">Terms & conditions</a><Link href="/privacy">Privacy notice <ArrowRight size={12} /></Link></div></div></footer>
   </>;
