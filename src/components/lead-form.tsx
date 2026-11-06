@@ -267,6 +267,6 @@ export default function LeadForm({ prefill, onStatusChange }: { prefill?: LoanPr
       setReference(result.reference);
     } catch (err) {
       setError(err instanceof Error && err.name !== "TimeoutError" && err.name !== "TypeError" ? err.message : "We couldn’t confirm receipt. Please check your connection before trying again.");
-//     <div className="form-footer"><Check size={14} /><span>Submitting an enquiry does not guarantee approval or commit you to a loan.</span></div>
-//   </section>;
-// }
+    <div className="form-footer"><Check size={14} /><span>Submitting an enquiry does not guarantee approval or commit you to a loan.</span></div>
+  </section>;
+}
